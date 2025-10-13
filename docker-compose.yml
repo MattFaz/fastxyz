@@ -10,4 +10,6 @@ services:
     environment:
       - TZ=Australia/Melbourne
       - TIINGO_API_KEY=abc123
+    volumes:
+      - ./src/data:/app/src/data
     network_mode: bridge

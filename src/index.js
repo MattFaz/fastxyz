@@ -15,10 +15,10 @@ const registerModules = async () => {
 
 // Run the server!
 const start = async () => {
+  fastify.log.info(`FastXYZ v${version}`);
   try {
     await registerModules();
     initStockPriceScheduler(fastify);
-    fastify.log.info(`FastXYZ v${version}`);
     await fastify.listen({ port: 3000 });
   } catch (err) {
     fastify.log.error(err);
