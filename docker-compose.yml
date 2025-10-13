@@ -10,7 +10,7 @@ services:
     environment:
       - TZ=
       - TIINGO_API_KEY=
-      - API_KEY=
+      - AUTH_KEY=
     volumes:
       - ./src/data:/app/src/data
     network_mode: bridge
