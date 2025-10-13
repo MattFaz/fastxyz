@@ -1,0 +1,13 @@
+services:
+  fastxyz:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastxyz
+    restart: unless-stopped
+    ports:
+      - 3003:3000
+    environment:
+      - TZ=Australia/Melbourne
+      - TIINGO_API_KEY=abc123
+    network_mode: bridge
