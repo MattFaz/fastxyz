@@ -25,7 +25,7 @@ fastify.addHook("preHandler", (request, reply, done) => {
 const registerModules = async () => {
   await fastify.register(require("./plugins/env.js"));
   await fastify.register(require("@fastify/cors"), {
-    methods: ["GET"],
+    methods: ["GET", "OPTIONS"],
     origin: "*",
   });
   await fastify.register(require("./routes/price.js"));
