@@ -8,8 +8,9 @@ services:
     ports:
       - 3003:3000
     environment:
-      - TZ=Australia/Melbourne
-      - TIINGO_API_KEY=abc123
+      - TZ=
+      - TIINGO_API_KEY=
+      - API_KEY=
     volumes:
       - ./src/data:/app/src/data
     network_mode: bridge
