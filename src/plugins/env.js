@@ -2,8 +2,8 @@ const fastifyEnv = require("@fastify/env");
 
 const schema = {
   type: "object",
-  required: ["TIINGO_API_KEY", "AUTH_KEY"],
-  properties: { TIINGO_API_KEY: { type: "string" }, AUTH_KEY: { type: "string" } },
+  required: ["TIINGO_API_KEY", "API_KEY"],
+  properties: { TIINGO_API_KEY: { type: "string" }, API_KEY: { type: "string" } },
 };
 
 const options = {

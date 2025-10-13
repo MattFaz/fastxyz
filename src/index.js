@@ -10,12 +10,11 @@ const { initStockPriceScheduler } = require("./scheduler/stockPriceFetcher");
 // Global auth hook
 fastify.addHook("preHandler", (request, reply, done) => {
   // Skip auth for CORS preflight requests
-  if (request.method === "OPTIONS") {
-    return done();
-  }
+  if (request.method === "OPTIONS") return done();
 
-  const authKey = request.headers["auth-key"];
-  if (authKey !== process.env.AUTH_KEY) {
+  const apiKey = request.headers["X_API_KEY"];
+  if (apiKey !== process.env.API_KEY) {
+    fastify.log.error(`Unauthorized request from ${request.ip}`);
     return reply.code(401).send({ error: "Unauthorized" });
   }
   done();
@@ -37,7 +36,7 @@ const start = async () => {
   try {
     await registerModules();
     initStockPriceScheduler(fastify);
-    await fastify.listen({ port: 3000, host: '0.0.0.0' });
+    await fastify.listen({ port: 3000, host: "0.0.0.0" });
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

@@ -33,6 +33,7 @@ npm install
 3. Create a `.env` file in the root directory:
 ```bash
 TIINGO_API_KEY=your_tiingo_api_key_here
+API_KEY=xx
 ```
 
 ## Usage
@@ -108,6 +109,7 @@ The application requires the following environment variables:
 | Variable | Description | Required |
 |----------|-------------|----------|
 | `TIINGO_API_KEY` | API key for Tiingo stock data service | Yes |
+| `API_KEY` | API key for API request (basic auth) | Yes |
 
 ## Development
 
