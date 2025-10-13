@@ -14,7 +14,7 @@ fastify.addHook("preHandler", (request, reply, done) => {
     return done();
   }
 
-  const authKey = request.headers["AUTH_KEY"];
+  const authKey = request.headers["auth-key"];
   if (authKey !== process.env.AUTH_KEY) {
     return reply.code(401).send({ error: "Unauthorized" });
   }
