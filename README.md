@@ -56,13 +56,17 @@ docker-compose up -d
 
 ## API Endpoints
 
+### Authentication
+
+All API endpoints require authentication via the `x-api-key` header. The key must match the `API_KEY` environment variable configured on the server.
+
 ### GET /price
 
 Returns the current or historical stock price data for NYSE:XYZ.
 
 **Example Request:**
 ```bash
-curl http://localhost:3000/price
+curl -H "x-api-key: your-api-key-here" http://localhost:3000/price
 ```
 
 **Example Response:**
