@@ -12,7 +12,7 @@ fastify.addHook("preHandler", (request, reply, done) => {
   // Skip auth for CORS preflight requests
   if (request.method === "OPTIONS") return done();
 
-  const apiKey = request.headers["X_API_KEY"];
+  const apiKey = request.headers["X-API-KEY"];
   if (apiKey !== process.env.API_KEY) {
     fastify.log.error(`Unauthorized request from ${request.ip}`);
     return reply.code(401).send({ error: "Unauthorized" });
