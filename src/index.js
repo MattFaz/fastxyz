@@ -9,7 +9,12 @@ const { initStockPriceScheduler } = require("./scheduler/stockPriceFetcher");
 
 // Global auth hook
 fastify.addHook("preHandler", (request, reply, done) => {
-  const apiKey = request.headers["X-API-KEY"];
+  // Skip auth for CORS preflight requests
+  if (request.method === "OPTIONS") {
+    return done();
+  }
+
+  const apiKey = request.headers["x-api-key"];
   if (apiKey !== process.env.API_KEY) {
     return reply.code(401).send({ error: "Unauthorized" });
   }
