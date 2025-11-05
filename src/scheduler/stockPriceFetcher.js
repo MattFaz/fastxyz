@@ -1,7 +1,7 @@
 const { SimpleIntervalJob, AsyncTask, ToadScheduler } = require("toad-scheduler");
 const { insertStockPrice } = require("../db");
 
-// Every 30 mins, get the current stock price for NYSE:XYZ
+// Every 5 mins, get the current stock price for NYSE:XYZ using IEX real-time data
 const getStockPrice = async (fastify) => {
   const startTime = new Date().toISOString();
   fastify.log.info(`[${startTime}] Starting scheduled stock price fetch for NYSE:XYZ`);
@@ -12,25 +12,26 @@ const getStockPrice = async (fastify) => {
       Authorization: `Token ${process.env.TIINGO_API_KEY}`,
     };
 
-    fastify.log.info("Calling Tiingo API...");
-    const response = await fetch("https://api.tiingo.com/tiingo/daily/xyz/prices", { headers });
+    fastify.log.info("Calling Tiingo IEX API for real-time data...");
+    const response = await fetch("https://api.tiingo.com/iex/xyz", { headers });
 
     if (!response.ok) {
       throw new Error(`Tiingo API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    fastify.log.info({ apiResponse: data }, "Received response from Tiingo API");
+    fastify.log.info({ apiResponse: data }, "Received response from Tiingo IEX API");
 
-    // Extract the latest closing price from the response
-    // Tiingo returns an array with the most recent price data
-    if (data && data.length > 0 && data[0].close !== undefined) {
-      const latestPrice = data[0].close;
+    // Extract the last traded price from the IEX response
+    // IEX returns an array with real-time data including 'last' (last trade price)
+    if (data && data.length > 0 && data[0].last !== undefined) {
+      const latestPrice = data[0].last;
+      const lastSaleTimestamp = data[0].lastSaleTimestamp;
       insertStockPrice(latestPrice);
       const endTime = new Date().toISOString();
       fastify.log.info(
-        { price: latestPrice, timestamp: endTime },
-        `✓ Successfully saved stock price: $${latestPrice} at ${endTime}`
+        { price: latestPrice, lastSaleTimestamp, timestamp: endTime },
+        `✓ Successfully saved stock price: $${latestPrice} (last trade: ${lastSaleTimestamp}) at ${endTime}`
       );
       return latestPrice;
     } else {
