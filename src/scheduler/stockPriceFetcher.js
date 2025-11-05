@@ -23,19 +23,28 @@ const getStockPrice = async (fastify) => {
     fastify.log.info({ apiResponse: data }, "Received response from Tiingo IEX API");
 
     // Extract the last traded price from the IEX response
-    // IEX returns an array with real-time data including 'last' (last trade price)
-    if (data && data.length > 0 && data[0].last !== undefined) {
-      const latestPrice = data[0].last;
-      const lastSaleTimestamp = data[0].lastSaleTimestamp;
-      insertStockPrice(latestPrice);
-      const endTime = new Date().toISOString();
-      fastify.log.info(
-        { price: latestPrice, lastSaleTimestamp, timestamp: endTime },
-        `✓ Successfully saved stock price: $${latestPrice} (last trade: ${lastSaleTimestamp}) at ${endTime}`
-      );
-      return latestPrice;
+    // IEX returns an array with real-time data
+    // Priority: 'last' (last trade) > 'tngoLast' (Tiingo's last price) > 'prevClose' (previous close)
+    if (data && data.length > 0) {
+      const priceData = data[0];
+      const latestPrice = priceData.last ?? priceData.tngoLast ?? priceData.prevClose;
+      const lastSaleTimestamp = priceData.lastSaleTimestamp || priceData.timestamp;
+
+      if (latestPrice !== null && latestPrice !== undefined) {
+        insertStockPrice(latestPrice);
+        const endTime = new Date().toISOString();
+        const priceSource = priceData.last ? 'last trade' : priceData.tngoLast ? 'tngoLast' : 'prevClose';
+        fastify.log.info(
+          { price: latestPrice, lastSaleTimestamp, priceSource, timestamp: endTime },
+          `✓ Successfully saved stock price: $${latestPrice} (source: ${priceSource}, timestamp: ${lastSaleTimestamp}) at ${endTime}`
+        );
+        return latestPrice;
+      } else {
+        fastify.log.error({ apiResponse: data }, "No valid price data found in API response");
+        return null;
+      }
     } else {
-      fastify.log.error({ apiResponse: data }, "No price data found in API response");
+      fastify.log.error({ apiResponse: data }, "Empty or invalid API response");
       return null;
     }
   } catch (error) {
@@ -46,18 +55,24 @@ const getStockPrice = async (fastify) => {
 };
 
 const initStockPriceScheduler = (fastify) => {
-  const task = new AsyncTask("getStockPrice", () => getStockPrice(fastify), []);
+  const task = new AsyncTask(
+    "getStockPrice",
+    () => getStockPrice(fastify),
+    (err) => {
+      fastify.log.error({ error: err.message, stack: err.stack }, "Error in stock price scheduler task");
+    }
+  );
   const job = new SimpleIntervalJob(
     {
       minutes: 5,
-      runImmediately: true, // Run immediately on startup, then every 30 minutes
+      runImmediately: true, // Run immediately on startup, then every 5 minutes
     },
     task
   );
   const scheduler = new ToadScheduler();
   scheduler.addSimpleIntervalJob(job);
 
-  fastify.log.info("Stock price scheduler initialized - will fetch every 30 minutes");
+  fastify.log.info("Stock price scheduler initialized - will fetch every 5 minutes");
 
   return scheduler;
 };
