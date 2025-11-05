@@ -4,6 +4,9 @@ FROM node:lts-alpine
 # create work directory in app folder
 WORKDIR /app
 
+# install build dependencies for better-sqlite3
+RUN apk add --no-cache python3 make g++
+
 # copy over files
 COPY package.json package-lock.json* /app/
 
