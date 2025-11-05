@@ -39,10 +39,7 @@ const getStockPrice = async (fastify) => {
     }
   } catch (error) {
     const errorTime = new Date().toISOString();
-    fastify.log.error(
-      { error: error.message, timestamp: errorTime },
-      `✗ Failed to fetch stock price at ${errorTime}`
-    );
+    fastify.log.error({ error: error.message, timestamp: errorTime }, `✗ Failed to fetch stock price at ${errorTime}`);
     throw error;
   }
 };
@@ -51,7 +48,7 @@ const initStockPriceScheduler = (fastify) => {
   const task = new AsyncTask("getStockPrice", () => getStockPrice(fastify), []);
   const job = new SimpleIntervalJob(
     {
-      minutes: 30,
+      minutes: 5,
       runImmediately: true, // Run immediately on startup, then every 30 minutes
     },
     task
