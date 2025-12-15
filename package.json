@@ -8,7 +8,7 @@
     "toad-scheduler": "^3.1.0"
   },
   "name": "fastxyz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fastify API that logs API calls and return the current stock price for NYSE:XYZ",
   "main": "index.js",
   "scripts": {
