@@ -12,7 +12,7 @@
     }
 }
 
-fastxyz.mfazz.com {
+fastxyz.yourdomain.com {
     # Allow OPTIONS (CORS preflight) through without auth
     @options method OPTIONS
     handle @options {
