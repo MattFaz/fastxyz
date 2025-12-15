@@ -1,0 +1,29 @@
+(config) {
+    log {
+        output file /var/log/{args[0]}.log {
+            roll_size 5MiB
+            roll_keep 10
+            roll_keep_for 720h
+        }
+    }
+    tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        resolvers 1.1.1.1
+    }
+}
+
+fastxyz.mfazz.com {
+    # Allow OPTIONS (CORS preflight) through without auth
+    @options method OPTIONS
+    handle @options {
+        reverse_proxy {env.HOST}:5152
+    }
+
+    # Auth for other requests
+    @auth header X-API-KEY {env.API_KEY}
+    handle @auth {
+        reverse_proxy {env.HOST}:5152
+    }
+    respond 401
+    import config fastxyz
+}

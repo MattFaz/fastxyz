@@ -1,0 +1,20 @@
+meta {
+  name: /price
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{URL}}/price
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-API-KEY: {{apiKey}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
